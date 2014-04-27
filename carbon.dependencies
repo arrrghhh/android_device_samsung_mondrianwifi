@@ -1,0 +1,38 @@
+[
+  {
+    "remote": "cm",
+    "repository": "CyanogenMod/android_device_qcom_common",
+    "target_path": "device/qcom/common"
+    "revision": "cm-11.0"
+  },
+  {
+    "remote": "cm",
+    "repository": "CyanogenMod/android_device_samsung_qcom-common",
+    "target_path": "device/samsung/qcom-common"
+    "revision": "cm-11.0"
+  },
+  {
+    "remote": "cm",
+    "repository": "CyanogenMod/android_device_samsung_msm8960-common",
+    "target_path": "device/samsung/msm8960-common"
+    "revision": "cm-11.0"
+  },
+  {
+    "remote": "cm",
+    "repository": "CyanogenMod/android_kernel_samsung_mondrianwifi",
+    "target_path": "kernel/samsung/mondrianwifi"
+    "revision": "cm-11.0"
+  },
+  {
+    "remote": "cm",
+    "repository": "CyanogenMod/android_hardware_qcom_display-caf-new",
+    "target_path": "hardware/qcom/display-caf-new"
+    "revision": "cm-11.0"
+  },
+  {
+    "remote": "cm",
+    "repository": "CyanogenMod/android_hardware_qcom_media-caf-new",
+    "target_path": "hardware/qcom/media-caf-new"
+    "revision": "cm-11.0"
+  }
+]
