@@ -96,23 +96,23 @@ static int check_vendor_module()
     return rv;
 }
 
-const static char * iso_values[] = {"auto,"
-#ifdef ISO_MODE_HJR
-"ISO_HJR,"
-#endif
-"ISO100,ISO200,ISO400,ISO800"
-#ifdef ISO_MODE_1600
-",ISO1600"
-#endif
-,"auto"};
+#define KEY_VIDEO_HFR_VALUES "video-hfr-values"
 
 static char * camera_fixup_getparams(int id, const char * settings)
 {
     android::CameraParameters params;
     params.unflatten(android::String8(settings));
 
-
-
+    /* If the vendor has HFR values but doesn't also expose that
+     * this can be turned off, fixup the params to tell the Camera
+     * that it really is okay to turn it off.
+     */
+    const char* hfrValues = params.get(KEY_VIDEO_HFR_VALUES);
+    if (hfrValues && *hfrValues && ! strstr(hfrValues, "off")) {
+        char tmp[strlen(hfrValues) + 4 + 1];
+        sprintf(tmp, "off,%s", hfrValues);
+        params.set(KEY_VIDEO_HFR_VALUES, tmp);
+    }
 
     android::String8 strParams = params.flatten();
     char *ret = strdup(strParams.string());
@@ -130,10 +130,10 @@ char * camera_fixup_setparams(struct camera_device * device, const char * settin
     bool isVideo = recordingHint && !strcmp(recordingHint, "true");
 
     if (isVideo) {
-	params.set("dis", "disable");
-	params.set(android::CameraParameters::KEY_ZSL, "off");
+        params.set("dis", "disable");
+        params.set(android::CameraParameters::KEY_ZSL, "off");
     } else {
-	params.set(android::CameraParameters::KEY_ZSL, "on");
+        params.set(android::CameraParameters::KEY_ZSL, "on");
     }
 
     android::String8 strParams = params.flatten();
@@ -323,11 +323,7 @@ int camera_cancel_auto_focus(struct camera_device * device)
 
     /* APEXQ/D2/EXPRESS: Calling cancel_auto_focus causes the camera to crash for unknown reasons. Disabling
      * it has no adverse effect. Return 0 */
-#ifdef DISABLE_AUTOFOCUS
-    return 0;
-#else
     return VENDOR_CALL(device, cancel_auto_focus);
-#endif
 }
 
 int camera_take_picture(struct camera_device * device)
@@ -527,8 +523,8 @@ int camera_device_open(const hw_module_t* module, const char* name,
         memset(camera_device, 0, sizeof(*camera_device));
         camera_device->id = cameraid;
 
-        if(rv = gVendorModule->common.methods->open((const hw_module_t*)gVendorModule, name, (hw_device_t**)&(camera_device->vendor)))
-        {
+        rv = gVendorModule->common.methods->open((const hw_module_t*)gVendorModule, name, (hw_device_t**)&(camera_device->vendor));
+        if (rv) {
             ALOGE("vendor camera open fail");
             goto fail;
         }

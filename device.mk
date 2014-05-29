@@ -19,6 +19,9 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 ## Get non-open-source specific aspects
 $(call inherit-product-if-exists, vendor/samsung/mondrianwifi/mondrianwifi-vendor.mk)
 
+## We are a tablet, not a phone
+PRODUCT_CHARACTERISTICS := tablet
+
 ## overlays
 DEVICE_PACKAGE_OVERLAYS += device/samsung/mondrianwifi/overlay
 
@@ -103,6 +106,7 @@ PRODUCT_PACKAGES += \
     init.ril.rc \
     init.target.rc \
     ueventd.qcom.rc
+
 # HAL
 PRODUCT_PACKAGES += \
     copybit.msm8974 \
@@ -124,20 +128,19 @@ PRODUCT_PACKAGES += \
     libqcomvoiceprocessing \
     tinymix
 
-# Torch
-PRODUCT_PACKAGES += Torch
-
 # Wifi
 PRODUCT_PACKAGES += \
-    libnetcmdiface \
     macloader \
     crda \
     regulatory.bin \
     linville.key.pub.pem \
-    wcnss_service
+    wcnss_service \
+    libwcnss_qmi
 
 PRODUCT_COPY_FILES += \
-    device/samsung/mondrianwifi/WCNSS_qcom_cfg.ini:system/etc/firmware/wlan/prima/WCNSS_qcom_cfg.ini
+    $(LOCAL_PATH)/wifi/WCNSS_qcom_cfg.ini:system/etc/firmware/wlan/prima/WCNSS_qcom_cfg.ini \
+    $(LOCAL_PATH)/wifi/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
+    $(LOCAL_PATH)/wifi/WCNSS_qcom_wlan_nv.bin:system/etc/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin
 
 # libxml2 is needed for camera
 PRODUCT_PACKAGES += libxml2
@@ -177,7 +180,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ril.subscription.types=NV,RUIM \
     ro.ril.hsxpa=1 \
     ro.ril.gprsclass=10 \
-    ro.use_data_netmgrd=true \
+    ro.use_data_netmgrd=false \
     persist.data.netmgrd.qos.enable=true \
     persist.radio.add_power_save=1 \
     persist.radio.apm_sim_not_pwdn=1 \
@@ -193,9 +196,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.rild.nitz_short_ons_3=""
 
 # msm_rng entropy feeder
-#PRODUCT_PACKAGES += \
-#    qrngd \
-#    qrngp
+PRODUCT_PACKAGES += \
+    qrngd \
+    qrngp
 
 # Wifi
 PRODUCT_COPY_FILES += \

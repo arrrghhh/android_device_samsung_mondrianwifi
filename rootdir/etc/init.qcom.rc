@@ -83,6 +83,10 @@ on early-boot
     chown system system /sys/class/graphics/fb1/format_3d
     ## [END] system_sw.sa
 
+    # Download the wlan firmware and start it up
+    write /dev/wcnss_wlan 1
+    start wcnss-service
+
 on boot
 
     mount debugfs /sys/kernel/debug /sys/kernel/debug
@@ -230,9 +234,6 @@ on post-fs-data
     chmod 0664  /sys/class/sec/sec_touchkey/brightness
     chown root system  /sys/class/sec/sec_touchkey/max_brightness
     chmod 0664  /sys/class/sec/sec_touchkey/max_brightness
-
-    chmod 666 /sys/class/leds/torch-sec1/brightness
-    chown system camera /sys/class/leds/torch-sec1/brightness
 
     #Create the symlink to qcn wpa_supplicant folder for ar6000 wpa_supplicant
     mkdir /data/system 0775 system system
@@ -409,21 +410,11 @@ service qmuxd /system/bin/qmuxd
     group radio audio bluetooth gps qcom_diag
     disabled
 
-service netmgrd /system/bin/netmgrd
-    class main
-    user root
-    group radio
-    disabled
-
 service sensors /system/bin/sensors.qcom
     class late_start
     user root
     group root
     disabled
-
-on property:ro.use_data_netmgrd=false
-    # netmgr not supported on specific target
-    stop netmgrd
 
 # Adjust socket buffer to enlarge TCP receive window for high bandwidth
 # but only if ro.data.large_tcp_window_size property is set.
@@ -453,6 +444,13 @@ service amp_load /system/bin/amploader -l 7000
 service amp_unload /system/bin/amploader -u
     class late_start
     user root
+    disabled
+    oneshot
+
+service wcnss-service /system/bin/wcnss_service
+    class late_start
+    user system
+    group system wifi
     disabled
     oneshot
 
@@ -648,6 +646,10 @@ service wifi-crda /system/bin/sh /system/etc/init.crda.sh
 on property:sys.boot_completed=1
     start qcom-post-boot
     write /sys/block/mmcblk0/queue/scheduler row
+    write /sys/module/cpu_boost/parameters/boost_ms 10
+    write /sys/module/cpu_boost/parameters/sync_threshold 1728000
+    write /sys/module/cpu_boost/parameters/input_boost_freq 1497600
+    write /sys/module/cpu_boost/parameters/input_boost_ms 40
 
 service atfwd /system/bin/ATFWD-daemon
     class late_start
