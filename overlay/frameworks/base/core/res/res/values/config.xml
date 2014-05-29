@@ -255,10 +255,6 @@
     <!-- Boolean to enable stylus gestures -->
     <bool name="config_stylusGestures">true</bool>
 
-    <!-- Performance profiles -->
-    <string name="config_perf_profile_prop">sys.perf.profile</string>
-    <string name="config_perf_profile_default_entry">1</string>
-
     <!--  Maximum number of supported users -->
     <integer name="config_multiuserMaximumUsers">8</integer>
 
