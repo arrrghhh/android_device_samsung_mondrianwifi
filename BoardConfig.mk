@@ -20,10 +20,10 @@
 # definition file).
 #
 
+TARGET_MSM8974_COMMON_WLAN_VARIANT := prima
+
 # inherit from common msm8974
 -include device/samsung/msm8974-common/BoardConfigCommon.mk
-
-TARGET_MSM8974_COMMON_WLAN_VARIANT := prima
 
 TARGET_SPECIFIC_HEADER_PATH := device/samsung/mondrianwifi/include
 
